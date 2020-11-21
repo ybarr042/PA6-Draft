@@ -21,7 +21,7 @@ namespace PA6_Draft
         private Point PickedLocation;
         private Dictionary<Piece,Bitmap> PieceImages;//BlackPawn,WhitePawn,BlackRook,WhiteRook,BlackKnight,WhiteKnight,BlackBishop,WhiteBishop
                                                      //,BlackKing, WhiteKing, BlackQueen, WhiteQueen;
-        
+        //working here
         BindingList<Move> bList = new BindingList<Move>();
 
         internal Chessboard(Color Light, Color Dark, ChessGame Game)

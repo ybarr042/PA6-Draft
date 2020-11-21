@@ -171,6 +171,12 @@ namespace PA6_Draft
     class ChessGame
     {
         internal event ChessEvent Promote;
+        internal event ChessEvent Check;
+        internal event ChessEvent Checkmate;
+        internal event ChessEvent Stalemate;
+        internal event ChessEvent Move;
+        internal event ChessEvent Capture;
+
         internal Square[][] Board { get; }
         private Square EnPassant = null;
         private Castle CastlePermissions = Castle.BLONG|Castle.WLONG|Castle.BSHORT|Castle.WSHORT;

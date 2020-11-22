@@ -11,32 +11,33 @@ using System.Windows.Forms;
 namespace PA6_Draft
 {
     internal delegate object ChessEvent(Move move);
-    enum Piece { 
-    BPAWN,
-    WPAWN,
-    BKNIGHT,
-    WKNIGHT,
-    BBISHOP,
-    WBISHOP,
-    BROOK,
-    WROOK,
-    BQUEEN,
-    WQUEEN,
-    BKING,
-    WKING,
-    NONE
+    enum Piece
+    {
+        BPAWN,
+        WPAWN,
+        BKNIGHT,
+        WKNIGHT,
+        BBISHOP,
+        WBISHOP,
+        BROOK,
+        WROOK,
+        BQUEEN,
+        WQUEEN,
+        BKING,
+        WKING,
+        NONE
     }
     enum Castle
     {
         NONE,
         BSHORT,
         WSHORT,
-        BLONG=4,
-        WLONG=8
+        BLONG = 4,
+        WLONG = 8
     }
     enum Promotion
     {
-        BKNIGHT=2,
+        BKNIGHT = 2,
         WKNIGHT,
         BBISHOP,
         WBISHOP,
@@ -61,7 +62,7 @@ namespace PA6_Draft
         internal Piece CapturedPiece;
         internal Piece MovedPiece;
         internal Promotion Promoted;
-        internal Move(int x1,int y1,int x2,int y2)
+        internal Move(int x1, int y1, int x2, int y2)
         {
             X1 = x1;
             Y1 = y1;
@@ -75,11 +76,11 @@ namespace PA6_Draft
         }
         public override string ToString()
         {
-            string result = ((int)MovedPiece%2==0)?"\t\t":"";
+            string result = ((int)MovedPiece % 2 == 0) ? "\t\t" : "";
             if (Castled == Castle.BLONG || Castled == Castle.WLONG)
-                return result+"O-O-O";
+                return result + "O-O-O";
             if (Castled == Castle.BSHORT || Castled == Castle.WSHORT)
-                return result+"O-O";
+                return result + "O-O";
             switch (MovedPiece)
             {
                 case Piece.BROOK:
@@ -105,7 +106,7 @@ namespace PA6_Draft
             }
             if (CapturedPiece != Piece.NONE)
             {
-                if(MovedPiece==Piece.BPAWN || MovedPiece==Piece.WPAWN)
+                if (MovedPiece == Piece.BPAWN || MovedPiece == Piece.WPAWN)
                     result += (char)('a' + X1);
                 result += "x";
             }
@@ -133,14 +134,14 @@ namespace PA6_Draft
             if (Check)
                 result += "+";
             if (Checkmate)
-                result += ("#"+(((int)MovedPiece%2==0)?"0-1":"1-0"));
+                result += ("#" + (((int)MovedPiece % 2 == 0) ? "0-1" : "1-0"));
             if (Stalemate)
                 result += "1/2-1/2";
             return result;
         }
     }
-    class Square 
-    { 
+    class Square
+    {
         internal int Rank { get; }
         internal char File { get; }
         internal Piece Occupant { get; set; }
@@ -150,7 +151,7 @@ namespace PA6_Draft
             this.File = file;
             Occupant = Piece.NONE;
         }
-        internal Square(int rank, char file,Piece occupant)
+        internal Square(int rank, char file, Piece occupant)
         {
             this.Rank = rank;
             this.File = file;
@@ -162,9 +163,10 @@ namespace PA6_Draft
         }
         public override int GetHashCode()
         {
-            return Rank.GetHashCode()*23+File.GetHashCode();
+            return Rank.GetHashCode() * 23 + File.GetHashCode();
         }
-        public override string  ToString() {
+        public override string ToString()
+        {
             return File + "" + Rank;
         }
     }
@@ -174,12 +176,12 @@ namespace PA6_Draft
         internal event ChessEvent Check;
         internal event ChessEvent Checkmate;
         internal event ChessEvent Stalemate;
-        internal event ChessEvent Move;
+        //internal event ChessEvent Move;
         internal event ChessEvent Capture;
 
         internal Square[][] Board { get; }
         private Square EnPassant = null;
-        private Castle CastlePermissions = Castle.BLONG|Castle.WLONG|Castle.BSHORT|Castle.WSHORT;
+        private Castle CastlePermissions = Castle.BLONG | Castle.WLONG | Castle.BSHORT | Castle.WSHORT;
         internal bool WhiteTurn = true;
         internal long WLimit;
         internal long BLimit;
@@ -188,7 +190,7 @@ namespace PA6_Draft
         internal string WhiteTimeLimit;
         internal string BlackTimeLimit;
         private long Increment { get; set; }
-        internal List<Move> Moves;
+        internal BindingList<Move> Moves;
 
         internal string TimeToString(long milisec)
         {
@@ -215,8 +217,9 @@ namespace PA6_Draft
             result += centisecString;
             return result;
         }
-        public ChessGame(int timeLimit,int increment,string player1,string player2){
-            WLimit = BLimit= timeLimit * 60000;
+        public ChessGame(int timeLimit, int increment, string player1, string player2)
+        {
+            WLimit = BLimit = timeLimit * 60000;
             Increment = increment * 1000;
             Player1Name = player1;
             Player2Name = player2;
@@ -225,10 +228,10 @@ namespace PA6_Draft
             Board = new Square[8][];
             for (int i = 0; i < 8; i++)
                 Board[i] = new Square[8];
-            for(int i = 0; i < 8;i++)
-                for(int j = 0;j < 8;j++)
+            for (int i = 0; i < 8; i++)
+                for (int j = 0; j < 8; j++)
                 {
-                    Board[i][j] = new Square(8-j, (char)('a' + i));
+                    Board[i][j] = new Square(8 - j, (char)('a' + i));
                 }
             for (int i = 0; i < 8; i++)
             {
@@ -245,19 +248,19 @@ namespace PA6_Draft
             Board[4][0].Occupant = Piece.BKING;
             Board[3][7].Occupant = Piece.WQUEEN;
             Board[4][7].Occupant = Piece.WKING;
-            Moves = new List<Move>();
+            Moves = new BindingList<Move>();
 
         }
         private bool IsCheckmate(bool whiteKing)
         {
             if (!IsCheck(whiteKing))
                 return false;
-            foreach(Move move in AllLegalMoves(whiteKing))
+            foreach (Move move in AllLegalMoves(whiteKing))
             {
-                if (TryLegalMove(move,whiteKing))
+                if (TryLegalMove(move, whiteKing))
                     return false;
-            }
-            return true; 
+            }            
+            return true;
         }
         private bool IsStalemate(bool whiteKing)
         {
@@ -265,11 +268,11 @@ namespace PA6_Draft
         }
         private bool IsCheck(bool whiteKing)
         {
-            Square kingSquare=null;
+            Square kingSquare = null;
             for (int i = 0; i < 8; i++)//find the king on the board first!!!
                 for (int j = 0; j < 8; j++)
                     if (Board[i][j].Occupant == (whiteKing ? Piece.WKING : Piece.BKING))
-                    {   
+                    {
                         kingSquare = Board[i][j];
                         i = 8;
                         break;
@@ -291,20 +294,20 @@ namespace PA6_Draft
                 for (int j = 0; j < 8; j++)
                 {
                     Move move = new Move(source.File - 'a', 8 - source.Rank, i, j);
-                    if (LegalMove(move,true))
+                    if (LegalMove(move, true))
                         all.Add(move);
                 }
-                    return all;
+            return all;
         }
         private List<Move> AllLegalMoves(bool whiteTurn)
         {
             List<Move> all = new List<Move>();
-            for(int i = 0; i < 8;i++)
-                for(int j = 0; j < 8; j++)
+            for (int i = 0; i < 8; i++)
+                for (int j = 0; j < 8; j++)
                 {
                     if (Board[i][j].Occupant == Piece.NONE)
                         continue;
-                    if((int)Board[i][j].Occupant%2 == (whiteTurn ? 1 : 0))
+                    if ((int)Board[i][j].Occupant % 2 == (whiteTurn ? 1 : 0))
                     {
                         List<Move> partial = AllLegalMoves(Board[i][j]);
                         foreach (Move move in partial)
@@ -313,16 +316,16 @@ namespace PA6_Draft
                 }
             return all;
         }
-        private bool LegalMove(Move move,bool ignoreTurn)//Method has no side-effects! It checks whether move is legal. It ignores checks/checkmates/stalemates
+        private bool LegalMove(Move move, bool ignoreTurn)//Method has no side-effects! It checks whether move is legal. It ignores checks/checkmates/stalemates
         {
             int x1 = move.X1, y1 = move.Y1, x2 = move.X2, y2 = move.Y2;
             if (x1 == x2 && y1 == y2)//source and destination are the same!
                 return false;
             if (Board[x1][y1].Occupant == Piece.NONE)//source is an empty square!
                 return false;
-            if (!ignoreTurn && (int)Board[x1][y1].Occupant%2==(WhiteTurn?0:1))//It's not player's turn to move!
+            if (!ignoreTurn && (int)Board[x1][y1].Occupant % 2 == (WhiteTurn ? 0 : 1))//It's not player's turn to move!
                 return false;
-            if (Board[x2][y2].Occupant != Piece.NONE && 
+            if (Board[x2][y2].Occupant != Piece.NONE &&
                 ((int)Board[x1][y1].Occupant + (int)Board[x2][y2].Occupant) % 2 == 0)//a piece wants to capture another piece with the same color!
                 return false;
             switch (Board[x1][y1].Occupant)
@@ -427,7 +430,7 @@ namespace PA6_Draft
                     }
                     return true;
                 case Piece.BKING:
-                    if ((Castle.BSHORT&CastlePermissions)!=0)//short castle is permitted
+                    if ((Castle.BSHORT & CastlePermissions) != 0)//short castle is permitted
                     {
                         if (x1 == 4 && y1 == 0 && x2 == 6 && y2 == 0
                             && Board[7][0].Occupant == Piece.BROOK
@@ -467,7 +470,7 @@ namespace PA6_Draft
             }
             return true;
         }
-        internal bool TryLegalMove(Move move,bool whiteTurn)//Mehtod has no side-effects! Assuming that the move is legal, it tries the move to see if the king will stay safe after the move.
+        internal bool TryLegalMove(Move move, bool whiteTurn)//Mehtod has no side-effects! Assuming that the move is legal, it tries the move to see if the king will stay safe after the move.
         {
             int x1 = move.X1, y1 = move.Y1, x2 = move.X2, y2 = move.Y2;
             move.MovedPiece = Board[x1][y1].Occupant;
@@ -607,7 +610,7 @@ namespace PA6_Draft
         }
         internal bool Move(Move move)//If the move is not legal, returns false, otherwise, it makes the move and returns true...
         {
-            if (!LegalMove(move,false))
+            if (!LegalMove(move, false))
                 return false;
             int x1 = move.X1, y1 = move.Y1, x2 = move.X2, y2 = move.Y2;
             move.MovedPiece = Board[x1][y1].Occupant;
@@ -739,7 +742,7 @@ namespace PA6_Draft
                     newCastlePermissions &= ~Castle.WLONG;
                     break;
             }
-            if(!move.EnPassant && move.Castled == Castle.NONE)
+            if (!move.EnPassant && move.Castled == Castle.NONE)
                 move.CapturedPiece = Board[x2][y2].Occupant;
             bool illegal = false;
             switch (move.Castled)//checks to see if the adjacent square to the king is threatened by the opponent when castling. If so, castling is illegal (according to FIDE)...
@@ -784,7 +787,7 @@ namespace PA6_Draft
             }
             EnPassant = readyForEnPassant ? Board[x2][y2] : null;
             CastlePermissions = newCastlePermissions;
-            if(WhiteTurn)
+            if (WhiteTurn)
                 WhiteTimeLimit = TimeToString(WLimit += Increment);
             else
                 BlackTimeLimit = TimeToString(BLimit += Increment);
@@ -802,7 +805,7 @@ namespace PA6_Draft
             {
                 Board[move.X1][move.Y1].Occupant = Board[move.X2][move.Y2].Occupant;
                 Board[move.X2][move.Y2].Occupant = Piece.NONE;
-                if(WhiteTurn)
+                if (WhiteTurn)
                     Board[move.X2][move.Y2 + 1].Occupant = move.CapturedPiece;
                 else
                     Board[move.X2][move.Y2 - 1].Occupant = move.CapturedPiece;

@@ -22,7 +22,7 @@ namespace PA6_Draft
         private Dictionary<Piece,Bitmap> PieceImages;//BlackPawn,WhitePawn,BlackRook,WhiteRook,BlackKnight,WhiteKnight,BlackBishop,WhiteBishop
                                                      //,BlackKing, WhiteKing, BlackQueen, WhiteQueen;
         //working here
-        BindingList<Move> bList;
+        //BindingList<Move> bList;
 
         internal Chessboard(Color Light, Color Dark, ChessGame Game)
         {
@@ -52,7 +52,7 @@ namespace PA6_Draft
             Dropped = new Square(0, 'z');
             Board.Image = new Bitmap(512,512);
             Board_Paint(null,null);
-            bList = new BindingList<Move>();
+            //bList = new BindingList<Move>();
         }
         private object Game_Promote(Move move)
         {
@@ -173,7 +173,7 @@ namespace PA6_Draft
                 else  
                     Game.WhiteTimeLimit = Game.TimeToString(Game.WLimit -= MainTimer.Interval);
 
-                Player1Time.Text = Game.WhiteTimeLimit;
+                Player1Time.Text = Game.WhiteTimeLimit;                               
             }
             else
             {
@@ -187,6 +187,8 @@ namespace PA6_Draft
                 else
                     Game.BlackTimeLimit = Game.TimeToString(Game.BLimit -= MainTimer.Interval);
 
+                Move move;
+                //if(Game.)
                 Player2Time.Text = Game.BlackTimeLimit;
             }
         }

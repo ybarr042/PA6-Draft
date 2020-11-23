@@ -182,7 +182,7 @@ namespace PA6_Draft
         internal Square[][] Board { get; }
         private Square EnPassant = null;
         private Castle CastlePermissions = Castle.BLONG | Castle.WLONG | Castle.BSHORT | Castle.WSHORT;
-        internal bool WhiteTurn = true;
+        internal bool WhiteTurn = true;        
         internal long WLimit;
         internal long BLimit;
         internal string Player1Name;
@@ -191,6 +191,7 @@ namespace PA6_Draft
         internal string BlackTimeLimit;
         private long Increment { get; set; }
         internal BindingList<Move> Moves;
+        private bool IsGameDone = false;
 
         internal string TimeToString(long milisec)
         {
@@ -218,7 +219,7 @@ namespace PA6_Draft
             return result;
         }
         public ChessGame(int timeLimit, int increment, string player1, string player2)
-        {
+        {            
             WLimit = BLimit = timeLimit * 60000;
             Increment = increment * 1000;
             Player1Name = player1;
@@ -259,13 +260,30 @@ namespace PA6_Draft
             {
                 if (TryLegalMove(move, whiteKing))
                     return false;
-            }            
+            }
+            IsGameDone = true;
             return true;
         }
+
+        public bool IsGameFinished()
+        {
+            return IsGameDone;
+        }
+
         private bool IsStalemate(bool whiteKing)
         {
-            return !IsCheck(whiteKing) && AllLegalMoves(whiteKing).Count == 0;
+            if (!IsCheck(whiteKing) && AllLegalMoves(whiteKing).Count == 0)
+            {
+                IsGameDone = true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
         }
+
         private bool IsCheck(bool whiteKing)
         {
             Square kingSquare = null;

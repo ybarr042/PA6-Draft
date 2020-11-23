@@ -19,10 +19,9 @@ namespace PA6_Draft
         private Square Picked;
         private Square Dropped;
         private Point PickedLocation;
+        private bool time_control = false;
         private Dictionary<Piece, Bitmap> PieceImages;//BlackPawn,WhitePawn,BlackRook,WhiteRook,BlackKnight,WhiteKnight,BlackBishop,WhiteBishop
                                                       //,BlackKing, WhiteKing, BlackQueen, WhiteQueen;
-
-        // BindingList<Move> binding_list_move = new BindingList<Move>();
 
         internal Chessboard(Color Light, Color Dark, ChessGame Game)
         {
@@ -53,6 +52,8 @@ namespace PA6_Draft
             Board.Image = new Bitmap(512, 512);
             Board_Paint(null, null);
             this.listBox1.DataSource = Game.Moves;
+            Player1Time.Text = Game.WhiteTimeLimit.ToString();
+            Player2Time.Text = Game.BlackTimeLimit.ToString();
         }
         private object Game_Promote(Move move)
         {
@@ -70,6 +71,7 @@ namespace PA6_Draft
                                 Game.Board[X][Y].Occupant);
             PickedLocation = new Point(e.Location.X - sizeUnit, e.Location.Y - sizeUnit);
             Board.Refresh();
+            time_control = true;
         }
         private void Board_MouseUp(object sender, MouseEventArgs e)
         {
@@ -91,6 +93,8 @@ namespace PA6_Draft
                                     Game.Board[X][Y].Occupant);
             Picked.Occupant = Piece.NONE;
             Board.Invalidate();
+            //time_control = true;
+            //This is the event that triggers the mouse
         }
 
         private void Board_MouseMove(object sender, MouseEventArgs e)
@@ -161,35 +165,44 @@ namespace PA6_Draft
 
         private void MainTimer_Tick(object sender, EventArgs e)
         {
-            if (Game.WhiteTurn)
+            if (!Game.IsGameFinished())
             {
-                if (Game.WLimit <= MainTimer.Interval)
+                if (Game.WhiteTurn)
                 {
-                    Game.WhiteTimeLimit = "0.00";
-                    Game.WLimit = 0;
-                    MainTimer.Stop();
-                    MessageBox.Show(Game.Player1Name + " lost by timeout");
+                    if (time_control)
+                    {
+                        if (Game.WLimit <= MainTimer.Interval)
+                        {
+                            Game.WhiteTimeLimit = "0.00";
+                            Game.WLimit = 0;
+                            MainTimer.Stop();
+                            MessageBox.Show(Game.Player1Name + " lost by timeout");
+                        }
+                        else
+                        {
+                            Game.WhiteTimeLimit = Game.TimeToString(Game.WLimit -= MainTimer.Interval);
+                            Player1Time.Text = Game.WhiteTimeLimit;
+                        }
+                    }
                 }
                 else
-                    Game.WhiteTimeLimit = Game.TimeToString(Game.WLimit -= MainTimer.Interval);
-
-                Player1Time.Text = Game.WhiteTimeLimit;
-            }
-            else
-            {
-                if (Game.BLimit <= MainTimer.Interval)
                 {
-                    Game.BlackTimeLimit = "0.00";
-                    Game.BLimit = 0;
-                    MainTimer.Stop();
-                    MessageBox.Show(Game.Player2Name + " lost by timeout");
+                    if (time_control)
+                    {
+                        if (Game.BLimit <= MainTimer.Interval)
+                        {
+                            Game.BlackTimeLimit = "0.00";
+                            Game.BLimit = 0;
+                            MainTimer.Stop();
+                            MessageBox.Show(Game.Player2Name + " lost by timeout");
+                        }
+                        else
+                        {
+                            Game.BlackTimeLimit = Game.TimeToString(Game.BLimit -= MainTimer.Interval);
+                            Player2Time.Text = Game.BlackTimeLimit;
+                        }
+                    }
                 }
-                else
-                    Game.BlackTimeLimit = Game.TimeToString(Game.BLimit -= MainTimer.Interval);
-
-                Move move;
-                //if(Game.)
-                Player2Time.Text = Game.BlackTimeLimit;
             }
         }
 

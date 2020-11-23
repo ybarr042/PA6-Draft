@@ -92,9 +92,7 @@ namespace PA6_Draft
                                     Game.Board[X][Y].File,
                                     Game.Board[X][Y].Occupant);
             Picked.Occupant = Piece.NONE;
-            Board.Invalidate();
-            //time_control = true;
-            //This is the event that triggers the mouse
+            Board.Invalidate();            
         }
 
         private void Board_MouseMove(object sender, MouseEventArgs e)

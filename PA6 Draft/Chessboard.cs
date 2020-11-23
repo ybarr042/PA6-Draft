@@ -19,10 +19,10 @@ namespace PA6_Draft
         private Square Picked;
         private Square Dropped;
         private Point PickedLocation;
-        private Dictionary<Piece,Bitmap> PieceImages;//BlackPawn,WhitePawn,BlackRook,WhiteRook,BlackKnight,WhiteKnight,BlackBishop,WhiteBishop
-                                                     //,BlackKing, WhiteKing, BlackQueen, WhiteQueen;
-        //working here
-        //BindingList<Move> bList;
+        private Dictionary<Piece, Bitmap> PieceImages;//BlackPawn,WhitePawn,BlackRook,WhiteRook,BlackKnight,WhiteKnight,BlackBishop,WhiteBishop
+                                                      //,BlackKing, WhiteKing, BlackQueen, WhiteQueen;
+
+        // BindingList<Move> binding_list_move = new BindingList<Move>();
 
         internal Chessboard(Color Light, Color Dark, ChessGame Game)
         {
@@ -48,11 +48,11 @@ namespace PA6_Draft
             Player1.Text = Game.Player1Name;
             Player2.Text = Game.Player2Name;
             Game.Promote += Game_Promote;
-            Picked = new Square(0,'z');
+            Picked = new Square(0, 'z');
             Dropped = new Square(0, 'z');
-            Board.Image = new Bitmap(512,512);
-            Board_Paint(null,null);
-            //bList = new BindingList<Move>();
+            Board.Image = new Bitmap(512, 512);
+            Board_Paint(null, null);
+            this.listBox1.DataSource = Game.Moves;
         }
         private object Game_Promote(Move move)
         {
@@ -61,7 +61,7 @@ namespace PA6_Draft
         private void Board_MouseDown(object sender, MouseEventArgs e)
         {
             int sizeUnit = (int)Math.Round(Board.Image.Width / 16.0);
-            int X = e.X / (2*sizeUnit);
+            int X = e.X / (2 * sizeUnit);
             int Y = e.Y / (2 * sizeUnit);
             if (Game.Board[X][Y].Occupant == Piece.NONE)
                 return;
@@ -85,11 +85,11 @@ namespace PA6_Draft
             int X = e.X / (2 * sizeUnit);
             int Y = e.Y / (2 * sizeUnit);
             bool Success = Game.Move(new Move(Picked.File - 'a', 8 - Picked.Rank, X, Y));
-            if(Success)
+            if (Success)
                 Dropped = new Square(Game.Board[X][Y].Rank,
                                     Game.Board[X][Y].File,
                                     Game.Board[X][Y].Occupant);
-            Picked.Occupant = Piece.NONE ;
+            Picked.Occupant = Piece.NONE;
             Board.Invalidate();
         }
 
@@ -127,9 +127,9 @@ namespace PA6_Draft
                     g.DrawString("" + (8 - i), new Font(FontFamily.GenericSansSerif, 8, FontStyle.Bold),
                         (i % 2 == 0) ? DarkColor : LightColor, new Point(0, 3 * squareWidth / 64 + squareWidth * i));
                     g.DrawString("" + (char)('a' + i), new Font(FontFamily.GenericSansSerif, 8, FontStyle.Bold),
-                        (i % 2 == 1) ? DarkColor : LightColor, new Point(54 * squareWidth/64 + squareWidth * i, 498));
+                        (i % 2 == 1) ? DarkColor : LightColor, new Point(54 * squareWidth / 64 + squareWidth * i, 498));
                 }
-                if(Dropped.Occupant != Piece.NONE)
+                if (Dropped.Occupant != Piece.NONE)
                     g.FillRectangle(Highlighted, new Rectangle(squareWidth * (Dropped.File - 'a'), squareWidth * (8 - Dropped.Rank), squareWidth, squareWidth));
                 for (int i = 0; i < 8; i++)
                     for (int j = 0; j < 8; j++)
@@ -170,10 +170,10 @@ namespace PA6_Draft
                     MainTimer.Stop();
                     MessageBox.Show(Game.Player1Name + " lost by timeout");
                 }
-                else  
+                else
                     Game.WhiteTimeLimit = Game.TimeToString(Game.WLimit -= MainTimer.Interval);
 
-                Player1Time.Text = Game.WhiteTimeLimit;                               
+                Player1Time.Text = Game.WhiteTimeLimit;
             }
             else
             {

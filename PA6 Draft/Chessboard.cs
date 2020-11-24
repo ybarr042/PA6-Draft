@@ -21,10 +21,10 @@ namespace PA6_Draft
         private Square Dropped;
         private Point PickedLocation;
         private bool time_control = false;
+        SoundPlayer player;
         private Dictionary<Piece, Bitmap> PieceImages;//BlackPawn,WhitePawn,BlackRook,WhiteRook,BlackKnight,WhiteKnight,BlackBishop,WhiteBishop
                                                       //,BlackKing, WhiteKing, BlackQueen, WhiteQueen;
 
-        
 
         internal Chessboard(Color Light, Color Dark, ChessGame Game)
         {
@@ -50,8 +50,9 @@ namespace PA6_Draft
             Player1.Text = Game.Player1Name;
             Player2.Text = Game.Player2Name;
             Game.Promote += Game_Promote;
-            Game.Check += Game_Check;
+            Game.Check_in_Game += Game_Check;
             Game.Move_Pieces += Game_Moves;
+            Game.Checkmate += Game_Checkmate;
             Picked = new Square(0, 'z');
             Dropped = new Square(0, 'z');
             Board.Image = new Bitmap(512, 512);
@@ -67,14 +68,21 @@ namespace PA6_Draft
 
         private object Game_Check(Move move)
         {            
-            SoundPlayer player = new SoundPlayer(@"Resources\check_ding.wav");
+            player = new SoundPlayer(@"Resources\check_ding.wav");
+            player.Play();
+            return move;
+        }
+
+        private object Game_Checkmate(Move move)
+        {
+            player = new SoundPlayer(@"Resources\checkmate.wav");
             player.Play();
             return move;
         }
 
         private object Game_Moves(Move move)
         {
-            SoundPlayer player = new SoundPlayer(@"Resources\chess_move.wav");
+            player = new SoundPlayer(@"Resources\chess_move.wav");
             player.Play();
             return move;
         }
@@ -112,7 +120,7 @@ namespace PA6_Draft
                                     Game.Board[X][Y].File,
                                     Game.Board[X][Y].Occupant);
             Picked.Occupant = Piece.NONE;
-            Board.Invalidate();            
+            Board.Invalidate();
         }
 
         private void Board_MouseMove(object sender, MouseEventArgs e)

@@ -173,7 +173,7 @@ namespace PA6_Draft
     class ChessGame
     {
         internal event ChessEvent Promote;
-        internal event ChessEvent Check;
+        internal event ChessEvent Check_in_Game;
         internal event ChessEvent Checkmate;
         internal event ChessEvent Stalemate;
         internal event ChessEvent Move_Pieces;
@@ -182,7 +182,7 @@ namespace PA6_Draft
         internal Square[][] Board { get; }
         private Square EnPassant = null;
         private Castle CastlePermissions = Castle.BLONG | Castle.WLONG | Castle.BSHORT | Castle.WSHORT;
-        internal bool WhiteTurn = true;        
+        internal bool WhiteTurn = true;
         internal long WLimit;
         internal long BLimit;
         internal string Player1Name;
@@ -219,7 +219,7 @@ namespace PA6_Draft
             return result;
         }
         public ChessGame(int timeLimit, int increment, string player1, string player2)
-        {            
+        {
             WLimit = BLimit = timeLimit * 60000;
             Increment = increment * 1000;
             Player1Name = player1;
@@ -302,7 +302,6 @@ namespace PA6_Draft
             {
                 if (move.X2 == kingSquare.File - 'a' && move.Y2 == 8 - kingSquare.Rank)//if move threatens the king
                 {
-                    Check.Invoke(move);
                     return true;
                 }
             }
@@ -817,7 +816,11 @@ namespace PA6_Draft
             move.Check = IsCheck(!WhiteTurn) && !move.Checkmate;
             Moves.Add(move);
             WhiteTurn = !WhiteTurn;
-            Move_Pieces.Invoke(move);
+            Move_Pieces(move);
+            if (move.Check)
+                Check_in_Game(move);
+            if (move.Checkmate)
+                Checkmate(move);
             return true;
         }
 

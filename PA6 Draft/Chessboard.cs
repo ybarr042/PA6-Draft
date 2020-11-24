@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Media;
 
 namespace PA6_Draft
 {
@@ -22,6 +23,8 @@ namespace PA6_Draft
         private bool time_control = false;
         private Dictionary<Piece, Bitmap> PieceImages;//BlackPawn,WhitePawn,BlackRook,WhiteRook,BlackKnight,WhiteKnight,BlackBishop,WhiteBishop
                                                       //,BlackKing, WhiteKing, BlackQueen, WhiteQueen;
+
+        
 
         internal Chessboard(Color Light, Color Dark, ChessGame Game)
         {
@@ -47,6 +50,8 @@ namespace PA6_Draft
             Player1.Text = Game.Player1Name;
             Player2.Text = Game.Player2Name;
             Game.Promote += Game_Promote;
+            Game.Check += Game_Check;
+            Game.Move_Pieces += Game_Moves;
             Picked = new Square(0, 'z');
             Dropped = new Square(0, 'z');
             Board.Image = new Bitmap(512, 512);
@@ -59,6 +64,21 @@ namespace PA6_Draft
         {
             return ((int)move.MovedPiece % 2 == 0) ? Promotion.BQUEEN : Promotion.WQUEEN;
         }
+
+        private object Game_Check(Move move)
+        {            
+            SoundPlayer player = new SoundPlayer(@"Resources\check_ding.wav");
+            player.Play();
+            return move;
+        }
+
+        private object Game_Moves(Move move)
+        {
+            SoundPlayer player = new SoundPlayer(@"Resources\chess_move.wav");
+            player.Play();
+            return move;
+        }
+
         private void Board_MouseDown(object sender, MouseEventArgs e)
         {
             int sizeUnit = (int)Math.Round(Board.Image.Width / 16.0);

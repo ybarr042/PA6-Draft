@@ -176,7 +176,7 @@ namespace PA6_Draft
         internal event ChessEvent Check;
         internal event ChessEvent Checkmate;
         internal event ChessEvent Stalemate;
-        //internal event ChessEvent Move;
+        internal event ChessEvent Move_Pieces;
         internal event ChessEvent Capture;
 
         internal Square[][] Board { get; }
@@ -301,7 +301,10 @@ namespace PA6_Draft
             foreach (Move move in all)//for every legal move of the opponent
             {
                 if (move.X2 == kingSquare.File - 'a' && move.Y2 == 8 - kingSquare.Rank)//if move threatens the king
+                {
+                    Check.Invoke(move);
                     return true;
+                }
             }
             return false;
         }
@@ -814,6 +817,7 @@ namespace PA6_Draft
             move.Check = IsCheck(!WhiteTurn) && !move.Checkmate;
             Moves.Add(move);
             WhiteTurn = !WhiteTurn;
+            Move_Pieces.Invoke(move);
             return true;
         }
 

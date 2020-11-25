@@ -53,6 +53,9 @@ namespace PA6_Draft
             Game.Check_in_Game += Game_Check;
             Game.Move_Pieces += Game_Moves;
             Game.Checkmate += Game_Checkmate;
+            Game.StalemateGame += Game_Stalemate;
+            //Game.TimeLeft += Game_TimeLeft;
+            Game.Capture += Game_Capture;
             Picked = new Square(0, 'z');
             Dropped = new Square(0, 'z');
             Board.Image = new Bitmap(512, 512);
@@ -67,7 +70,7 @@ namespace PA6_Draft
         }
 
         private object Game_Check(Move move)
-        {            
+        {
             player = new SoundPlayer(@"Resources\check_ding.wav");
             player.Play();
             return move;
@@ -80,7 +83,39 @@ namespace PA6_Draft
             return move;
         }
 
+        private object Game_Stalemate(Move move)
+        {
+            SoundPlayer player2 = new SoundPlayer(@"Resources\checkmate.wav");
+            player2.Play();
+
+            if (Game.WhiteTurn)
+            {
+                MainTimer.Stop();
+                MessageBox.Show(Game.Player1Name + " lost by Stalemate");
+            }
+            else
+            {
+                MainTimer.Stop();
+                MessageBox.Show(Game.Player2Name + " lost by Stalemate");
+            }
+
+            return move;
+        }
+
+        private void Game_TimeLeft()
+        {
+            player = new SoundPlayer(@"Resources\captures.wav");
+            player.Play();
+        }
+
         private object Game_Moves(Move move)
+        {
+            player = new SoundPlayer(@"Resources\chess_move.wav");
+            player.Play();
+            return move;
+        }
+
+        private object Game_Capture(Move move)
         {
             player = new SoundPlayer(@"Resources\chess_move.wav");
             player.Play();

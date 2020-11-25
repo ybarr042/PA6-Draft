@@ -110,6 +110,9 @@
     <Content Include="br.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\captures.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\checkmate.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

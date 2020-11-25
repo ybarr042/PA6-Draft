@@ -11,6 +11,7 @@ using System.Windows.Forms;
 namespace PA6_Draft
 {
     internal delegate object ChessEvent(Move move);
+
     enum Piece
     {
         BPAWN,
@@ -175,16 +176,17 @@ namespace PA6_Draft
         internal event ChessEvent Promote;
         internal event ChessEvent Check_in_Game;
         internal event ChessEvent Checkmate;
-        internal event ChessEvent Stalemate;
+        internal event ChessEvent StalemateGame;//Not working
         internal event ChessEvent Move_Pieces;
-        internal event ChessEvent Capture;
+        internal event ChessEvent Capture; //implement this one.
+        //internal event ChessEvent TimeLeft; //implement this one.
 
         internal Square[][] Board { get; }
         private Square EnPassant = null;
         private Castle CastlePermissions = Castle.BLONG | Castle.WLONG | Castle.BSHORT | Castle.WSHORT;
         internal bool WhiteTurn = true;
-        internal long WLimit;
-        internal long BLimit;
+        internal long WLimit; // time limit of white player in miliseconds
+        internal long BLimit; // time limit of black player in miliseconds
         internal string Player1Name;
         internal string Player2Name;
         internal string WhiteTimeLimit;
@@ -281,7 +283,6 @@ namespace PA6_Draft
             {
                 return false;
             }
-
         }
 
         private bool IsCheck(bool whiteKing)
@@ -370,7 +371,10 @@ namespace PA6_Draft
                         }
                     }
                     else//normal capture...
+                    {
+                        //Capture(move);//////////////////////////////////////////////////////////////////////////////////////////////////////
                         return Math.Abs(x2 - x1) == 1 && y2 - y1 == 1;
+                    }
                     return true;
                 case Piece.WPAWN:
                     if (y1 == 3 && y2 == 2 && Math.Abs(x1 - x2) == 1 && Board[x2][y2].Occupant == Piece.NONE)//en passant
@@ -392,7 +396,11 @@ namespace PA6_Draft
                         }
                     }
                     else//normal capture...
+                    {
+                        //Capture(move);//////////////////////////////////////////////////////////////////////////////////////////////////////
                         return Math.Abs(x2 - x1) == 1 && y1 - y2 == 1;
+                    }
+
                     return true;
                 case Piece.BROOK:
                 case Piece.WROOK:
@@ -493,7 +501,9 @@ namespace PA6_Draft
         internal bool TryLegalMove(Move move, bool whiteTurn)//Mehtod has no side-effects! Assuming that the move is legal, it tries the move to see if the king will stay safe after the move.
         {
             int x1 = move.X1, y1 = move.Y1, x2 = move.X2, y2 = move.Y2;
+
             move.MovedPiece = Board[x1][y1].Occupant;
+
             switch (Board[x1][y1].Occupant)
             {
                 case Piece.BPAWN:
@@ -581,7 +591,10 @@ namespace PA6_Draft
                     }
                     break;
             }
+
             move.CapturedPiece = Board[x2][y2].Occupant;
+            //Capture(move);//////////////////////////////////////////////////////////////////////////////////////////////////////
+
             bool illegal = false;
             if (move.Castled == Castle.NONE)
             {
@@ -632,8 +645,10 @@ namespace PA6_Draft
         {
             if (!LegalMove(move, false))
                 return false;
+
             int x1 = move.X1, y1 = move.Y1, x2 = move.X2, y2 = move.Y2;
             move.MovedPiece = Board[x1][y1].Occupant;
+
             bool readyForEnPassant = false;
             Castle newCastlePermissions = CastlePermissions;
             switch (Board[x1][y1].Occupant)
@@ -646,6 +661,7 @@ namespace PA6_Draft
                                 Board[x2][4].Occupant = Piece.NONE;
                                 move.EnPassant = true;
                                 move.CapturedPiece = Piece.WPAWN;
+                                //Capture(move);///////////////////////////////////////////////////////////////////////////
                                 break;
                             }
                     if (Board[x2][y2].Occupant == Piece.NONE)
@@ -666,6 +682,7 @@ namespace PA6_Draft
                                 Board[x2][3].Occupant = Piece.NONE;
                                 move.EnPassant = true;
                                 move.CapturedPiece = Piece.BPAWN;
+                                //Capture(move);///////////////////////////////////////////////////////////////////////////
                                 break;
                             }
                     if (Board[x2][y2].Occupant == Piece.NONE)
@@ -763,7 +780,11 @@ namespace PA6_Draft
                     break;
             }
             if (!move.EnPassant && move.Castled == Castle.NONE)
+            {
                 move.CapturedPiece = Board[x2][y2].Occupant;
+                //Capture(move);///////////////////////////////////////////////////////////////////////////
+            }
+
             bool illegal = false;
             switch (move.Castled)//checks to see if the adjacent square to the king is threatened by the opponent when castling. If so, castling is illegal (according to FIDE)...
             {
@@ -808,19 +829,44 @@ namespace PA6_Draft
             EnPassant = readyForEnPassant ? Board[x2][y2] : null;
             CastlePermissions = newCastlePermissions;
             if (WhiteTurn)
+            {
                 WhiteTimeLimit = TimeToString(WLimit += Increment);
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //if (WLimit < 10000)
+                //{
+                //    TimeLeft(move);
+                //}
+            }
             else
+            {
                 BlackTimeLimit = TimeToString(BLimit += Increment);
+                //if (BLimit < 10000)
+                //{
+                //    TimeLeft(move);
+                //}
+            }
             move.Checkmate = IsCheckmate(!WhiteTurn);
             move.Stalemate = IsStalemate(!WhiteTurn);
             move.Check = IsCheck(!WhiteTurn) && !move.Checkmate;
             Moves.Add(move);
             WhiteTurn = !WhiteTurn;
             Move_Pieces(move);
+
+            //////////////////////////////////throw events///////////////////////////////
             if (move.Check)
+            {
                 Check_in_Game(move);
+            }
             if (move.Checkmate)
+            {
                 Checkmate(move);
+            }
+            if (move.Stalemate)
+            {
+                StalemateGame(move);
+            }
+            //Capture(move);
+
             return true;
         }
 

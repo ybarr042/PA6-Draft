@@ -21,6 +21,8 @@ namespace PA6_Draft
         private Square Dropped;
         private Point PickedLocation;
         private bool time_control = false;
+        private bool timer1_less10s = true;
+        private bool timer2_less10s = true;
         SoundPlayer player;
         private Dictionary<Piece, Bitmap> PieceImages;//BlackPawn,WhitePawn,BlackRook,WhiteRook,BlackKnight,WhiteKnight,BlackBishop,WhiteBishop
                                                       //,BlackKing, WhiteKing, BlackQueen, WhiteQueen;
@@ -54,6 +56,7 @@ namespace PA6_Draft
             Game.Move_Pieces += Game_Moves;
             Game.Checkmate += Game_Checkmate;
             Game.StalemateGame += Game_Stalemate;
+            Game.Capture += Game_Capture;
             //Game.TimeLeft += Game_TimeLeft;
             Game.Capture += Game_Capture;
             Picked = new Square(0, 'z');
@@ -104,7 +107,7 @@ namespace PA6_Draft
 
         private void Game_TimeLeft()
         {
-            player = new SoundPlayer(@"Resources\captures.wav");
+            player = new SoundPlayer(@"Resources\checkmate.wav");
             player.Play();
         }
 
@@ -117,7 +120,7 @@ namespace PA6_Draft
 
         private object Game_Capture(Move move)
         {
-            player = new SoundPlayer(@"Resources\chess_move.wav");
+            player = new SoundPlayer(@"Resources\captures.wav");
             player.Play();
             return move;
         }
@@ -232,6 +235,11 @@ namespace PA6_Draft
                 {
                     if (time_control)
                     {
+                        if (Game.WLimit < 10000 && timer1_less10s)
+                        {
+                            Game_TimeLeft();
+                            timer1_less10s = false;
+                        }
                         if (Game.WLimit <= MainTimer.Interval)
                         {
                             Game.WhiteTimeLimit = "0.00";
@@ -239,6 +247,7 @@ namespace PA6_Draft
                             MainTimer.Stop();
                             MessageBox.Show(Game.Player1Name + " lost by timeout");
                         }
+
                         else
                         {
                             Game.WhiteTimeLimit = Game.TimeToString(Game.WLimit -= MainTimer.Interval);
@@ -250,6 +259,11 @@ namespace PA6_Draft
                 {
                     if (time_control)
                     {
+                        if (Game.BLimit < 10000 && timer2_less10s)
+                        {
+                            Game_TimeLeft();
+                            timer2_less10s = false;
+                        }
                         if (Game.BLimit <= MainTimer.Interval)
                         {
                             Game.BlackTimeLimit = "0.00";

@@ -179,7 +179,7 @@ namespace PA6_Draft
         internal event ChessEvent StalemateGame;//Not working
         internal event ChessEvent Move_Pieces;
         internal event ChessEvent Capture; //implement this one.
-        //internal event ChessEvent TimeLeft; //implement this one.
+        
 
         internal Square[][] Board { get; }
         private Square EnPassant = null;
@@ -831,11 +831,8 @@ namespace PA6_Draft
             if (WhiteTurn)
             {
                 WhiteTimeLimit = TimeToString(WLimit += Increment);
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////
-                //if (WLimit < 10000)
-                //{
-                //    TimeLeft(move);
-                //}
+               
+               
             }
             else
             {
@@ -850,22 +847,29 @@ namespace PA6_Draft
             move.Check = IsCheck(!WhiteTurn) && !move.Checkmate;
             Moves.Add(move);
             WhiteTurn = !WhiteTurn;
-            Move_Pieces(move);
+            
 
             //////////////////////////////////throw events///////////////////////////////
-            if (move.Check)
-            {
-                Check_in_Game(move);
-            }
             if (move.Checkmate)
             {
                 Checkmate(move);
             }
-            if (move.Stalemate)
+            else if (move.Check)
+            {
+                Check_in_Game(move);
+            }
+            else if (move.Stalemate)
             {
                 StalemateGame(move);
             }
-            //Capture(move);
+            else if (move.CapturedPiece != Piece.NONE)
+            {
+                Capture(move);
+            }
+            else
+            {
+                Move_Pieces(move);
+            }
 
             return true;
         }

@@ -131,7 +131,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(2123, 1414);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(2124, 1356);
             this.Controls.Add(this.Player1);
             this.Controls.Add(this.Player2);
             this.Controls.Add(this.listBox1);

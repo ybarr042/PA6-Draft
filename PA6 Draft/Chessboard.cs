@@ -23,7 +23,12 @@ namespace PA6_Draft
         private bool time_control = false;
         private bool timer1_less10s = true;
         private bool timer2_less10s = true;
-        SoundPlayer player;
+        SoundPlayer player_check;
+        SoundPlayer player_checkmate;
+        SoundPlayer player_stalemate;
+        SoundPlayer player_time_left;
+        SoundPlayer player_move;
+        SoundPlayer player_capture;
         private Dictionary<Piece, Bitmap> PieceImages;//BlackPawn,WhitePawn,BlackRook,WhiteRook,BlackKnight,WhiteKnight,BlackBishop,WhiteBishop
                                                       //,BlackKing, WhiteKing, BlackQueen, WhiteQueen;
 
@@ -57,8 +62,12 @@ namespace PA6_Draft
             Game.Checkmate += Game_Checkmate;
             Game.StalemateGame += Game_Stalemate;
             Game.Capture += Game_Capture;
-            //Game.TimeLeft += Game_TimeLeft;
-            Game.Capture += Game_Capture;
+            player_check = new SoundPlayer(@"Resources\check.wav");
+            player_checkmate = new SoundPlayer(@"Resources\checkmate.wav");
+            player_stalemate = new SoundPlayer(@"Resources\checkmate.wav");
+            player_time_left = new SoundPlayer(@"Resources\time_left_clock.wav");
+            player_move = new SoundPlayer(@"Resources\chess_move.wav");
+            player_capture = new SoundPlayer(@"Resources\captures.wav");
             Picked = new Square(0, 'z');
             Dropped = new Square(0, 'z');
             Board.Image = new Bitmap(512, 512);
@@ -74,32 +83,32 @@ namespace PA6_Draft
 
         private object Game_Check(Move move)
         {
-            player = new SoundPlayer(@"Resources\check_ding.wav");
-            player.Play();
+            player_check.Play();
             return move;
         }
 
         private object Game_Checkmate(Move move)
         {
-            player = new SoundPlayer(@"Resources\checkmate.wav");
-            player.Play();
+            player_checkmate.Play();
             return move;
         }
 
         private object Game_Stalemate(Move move)
         {
-            SoundPlayer player2 = new SoundPlayer(@"Resources\checkmate.wav");
-            player2.Play();
+            player_stalemate.Play();
 
-            if (Game.WhiteTurn)
+            if (Game.IsGameStalemate())
             {
-                MainTimer.Stop();
-                MessageBox.Show(Game.Player1Name + " lost by Stalemate");
-            }
-            else
-            {
-                MainTimer.Stop();
-                MessageBox.Show(Game.Player2Name + " lost by Stalemate");
+                if (Game.WhiteTurn)
+                {
+                    MainTimer.Stop();
+                    MessageBox.Show(Game.Player1Name + " lost by Stalemate");
+                }
+                else
+                {
+                    MainTimer.Stop();
+                    MessageBox.Show(Game.Player2Name + " lost by Stalemate");
+                }
             }
 
             return move;
@@ -107,21 +116,21 @@ namespace PA6_Draft
 
         private void Game_TimeLeft()
         {
-            player = new SoundPlayer(@"Resources\checkmate.wav");
-            player.Play();
+            //player = new SoundPlayer(@"Resources\time_left_clock.wav");
+            player_time_left.Play();
         }
 
         private object Game_Moves(Move move)
         {
-            player = new SoundPlayer(@"Resources\chess_move.wav");
-            player.Play();
+            //player = new SoundPlayer(@"Resources\chess_move.wav");
+            player_move.Play();
             return move;
         }
 
         private object Game_Capture(Move move)
         {
-            player = new SoundPlayer(@"Resources\captures.wav");
-            player.Play();
+            //player = new SoundPlayer(@"Resources\captures.wav");
+            player_capture.Play();
             return move;
         }
 
@@ -139,6 +148,7 @@ namespace PA6_Draft
             Board.Refresh();
             time_control = true;
         }
+
         private void Board_MouseUp(object sender, MouseEventArgs e)
         {
             int sizeUnit = (int)Math.Round(Board.Image.Width / 16.0);

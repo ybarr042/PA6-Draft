@@ -176,10 +176,10 @@ namespace PA6_Draft
         internal event ChessEvent Promote;
         internal event ChessEvent Check_in_Game;
         internal event ChessEvent Checkmate;
-        internal event ChessEvent StalemateGame;//Not working
+        internal event ChessEvent StalemateGame;
         internal event ChessEvent Move_Pieces;
-        internal event ChessEvent Capture; //implement this one.
-        
+        internal event ChessEvent Capture; 
+
 
         internal Square[][] Board { get; }
         private Square EnPassant = null;
@@ -194,6 +194,7 @@ namespace PA6_Draft
         private long Increment { get; set; }
         internal BindingList<Move> Moves;
         private bool IsGameDone = false;
+        private bool IsGameDone2 = false;
 
         internal string TimeToString(long milisec)
         {
@@ -272,11 +273,15 @@ namespace PA6_Draft
             return IsGameDone;
         }
 
+        public bool IsGameStalemate()
+        {
+            return IsGameDone2;
+        }
+
         private bool IsStalemate(bool whiteKing)
         {
             if (!IsCheck(whiteKing) && AllLegalMoves(whiteKing).Count == 0)
-            {
-                IsGameDone = true;
+            {                
                 return true;
             }
             else
@@ -371,8 +376,7 @@ namespace PA6_Draft
                         }
                     }
                     else//normal capture...
-                    {
-                        //Capture(move);//////////////////////////////////////////////////////////////////////////////////////////////////////
+                    {                        
                         return Math.Abs(x2 - x1) == 1 && y2 - y1 == 1;
                     }
                     return true;
@@ -396,8 +400,7 @@ namespace PA6_Draft
                         }
                     }
                     else//normal capture...
-                    {
-                        //Capture(move);//////////////////////////////////////////////////////////////////////////////////////////////////////
+                    {                        
                         return Math.Abs(x2 - x1) == 1 && y1 - y2 == 1;
                     }
 
@@ -592,9 +595,7 @@ namespace PA6_Draft
                     break;
             }
 
-            move.CapturedPiece = Board[x2][y2].Occupant;
-            //Capture(move);//////////////////////////////////////////////////////////////////////////////////////////////////////
-
+            move.CapturedPiece = Board[x2][y2].Occupant;            
             bool illegal = false;
             if (move.Castled == Castle.NONE)
             {
@@ -660,8 +661,7 @@ namespace PA6_Draft
                             {
                                 Board[x2][4].Occupant = Piece.NONE;
                                 move.EnPassant = true;
-                                move.CapturedPiece = Piece.WPAWN;
-                                //Capture(move);///////////////////////////////////////////////////////////////////////////
+                                move.CapturedPiece = Piece.WPAWN;                                
                                 break;
                             }
                     if (Board[x2][y2].Occupant == Piece.NONE)
@@ -682,7 +682,6 @@ namespace PA6_Draft
                                 Board[x2][3].Occupant = Piece.NONE;
                                 move.EnPassant = true;
                                 move.CapturedPiece = Piece.BPAWN;
-                                //Capture(move);///////////////////////////////////////////////////////////////////////////
                                 break;
                             }
                     if (Board[x2][y2].Occupant == Piece.NONE)
@@ -781,8 +780,7 @@ namespace PA6_Draft
             }
             if (!move.EnPassant && move.Castled == Castle.NONE)
             {
-                move.CapturedPiece = Board[x2][y2].Occupant;
-                //Capture(move);///////////////////////////////////////////////////////////////////////////
+                move.CapturedPiece = Board[x2][y2].Occupant;                
             }
 
             bool illegal = false;
@@ -831,37 +829,33 @@ namespace PA6_Draft
             if (WhiteTurn)
             {
                 WhiteTimeLimit = TimeToString(WLimit += Increment);
-               
-               
             }
             else
             {
                 BlackTimeLimit = TimeToString(BLimit += Increment);
-                //if (BLimit < 10000)
-                //{
-                //    TimeLeft(move);
-                //}
             }
             move.Checkmate = IsCheckmate(!WhiteTurn);
             move.Stalemate = IsStalemate(!WhiteTurn);
+            IsGameDone2 = move.Stalemate;///////////////////////////////////////////////////////
             move.Check = IsCheck(!WhiteTurn) && !move.Checkmate;
             Moves.Add(move);
             WhiteTurn = !WhiteTurn;
-            
+
 
             //////////////////////////////////throw events///////////////////////////////
             if (move.Checkmate)
             {
                 Checkmate(move);
             }
-            else if (move.Check)
-            {
-                Check_in_Game(move);
-            }
             else if (move.Stalemate)
             {
                 StalemateGame(move);
             }
+            else if (move.Check)
+            {
+                Check_in_Game(move);
+            }
+            
             else if (move.CapturedPiece != Piece.NONE)
             {
                 Capture(move);

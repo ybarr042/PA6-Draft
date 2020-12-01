@@ -53,6 +53,12 @@
       <DependentUpon>Chessboard.cs</DependentUpon>
     </Compile>
     <Compile Include="ChessGame.cs" />
+    <Compile Include="PromotionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PromotionForm.Designer.cs">
+      <DependentUpon>PromotionForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -67,6 +73,9 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PromotionForm.resx">
+      <DependentUpon>PromotionForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -75,6 +84,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\DataSources\MoveString.datasource" />
     <None Include="Properties\Settings.settings">
@@ -125,6 +135,10 @@
     <Content Include="Resources\time_left_clock.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\wqpromotion.png" />
+    <None Include="Resources\wrpromotion.png" />
+    <None Include="Resources\wbpromotion.png" />
+    <None Include="Resources\wknpromotion.png" />
     <Content Include="wb.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

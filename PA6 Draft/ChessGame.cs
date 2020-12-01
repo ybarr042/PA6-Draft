@@ -281,7 +281,9 @@ namespace PA6_Draft
         private bool IsStalemate(bool whiteKing)
         {
             if (!IsCheck(whiteKing) && AllLegalMoves(whiteKing).Count == 0)
-            {                
+            {
+                IsGameDone = true;
+                IsGameDone2 = true;
                 return true;
             }
             else

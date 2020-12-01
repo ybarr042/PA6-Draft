@@ -194,7 +194,7 @@ namespace PA6_Draft
         private long Increment { get; set; }
         internal BindingList<Move> Moves;
         private bool IsGameDone = false;
-        private bool IsGameDone2 = false;
+        private bool IsGameDone2 = true;
 
         internal string TimeToString(long milisec)
         {

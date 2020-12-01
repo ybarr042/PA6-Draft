@@ -78,7 +78,30 @@ namespace PA6_Draft
         }
         private object Game_Promote(Move move)
         {
-            return ((int)move.MovedPiece % 2 == 0) ? Promotion.BQUEEN : Promotion.WQUEEN;
+            PromotionForm promotion = new PromotionForm();
+
+            DialogResult d = promotion.ShowDialog();
+
+            if (promotion.getSelection() == 1)
+            {
+                return ((int)move.MovedPiece % 2 == 0) ? Promotion.BQUEEN : Promotion.WQUEEN;
+            }
+            else if (promotion.getSelection() == 2)
+            {
+                return ((int)move.MovedPiece % 2 == 0) ? Promotion.BROOK : Promotion.WROOK;
+            }
+            else if (promotion.getSelection() == 3)
+            {
+                return ((int)move.MovedPiece % 2 == 0) ? Promotion.BBISHOP : Promotion.WBISHOP;
+            }
+            else if (promotion.getSelection() == 4)
+            {
+                return ((int)move.MovedPiece % 2 == 0) ? Promotion.BKNIGHT : Promotion.WKNIGHT;
+            }
+            else
+            {
+                return -1;
+            }
         }
 
         private object Game_Check(Move move)
@@ -96,7 +119,7 @@ namespace PA6_Draft
         private object Game_Stalemate(Move move)
         {
             player_stalemate.Play();
-
+            
             if (Game.IsGameStalemate())
             {
                 if (Game.WhiteTurn)
@@ -110,7 +133,7 @@ namespace PA6_Draft
                     MessageBox.Show(Game.Player2Name + " lost by Stalemate");
                 }
             }
-
+            
             return move;
         }
 
